@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض مكونات سيمتا</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lightbox2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .component-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .component-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .component-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .images-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .preview-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .card-footer {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+
+        .expand-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .expand-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 50px 0;
+        }
+
+        .error-message {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .component-card {
+                padding: 20px;
+            }
+        }
+
+        /* Custom Lightbox styling */
+        .lb-data .lb-caption {
+            font-family: 'Cairo', sans-serif !important;
+            font-size: 1.1rem !important;
+            direction: rtl !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>معرض مكونات سيمتا</h1>
+            <p>اختر أي مكون لعرض صوره التوضيحية</p>
+        </div>
+
+        <div id="gallery-container">
+            <div class="loading">جاري تحميل المعرض...</div>
+        </div>
+    </div>
+
+    <!-- jQuery (required for Lightbox2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    
+    <!-- Lightbox2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    
+    <!-- Component Data -->
+    <script src="script.js"></script>
+    
+    <script>
+        // Initialize gallery when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGallery();
+            
+            // Configure Lightbox2
+            lightbox.option({
+                'resizeDuration': 200,
+                'wrapAround': true,
+                'albumLabel': 'صورة %1 من %2',
+                'fadeDuration': 300,
+                'imageFadeDuration': 300
+            });
+        });
+
+        function initializeGallery() {
+            const container = document.getElementById('gallery-container');
+            
+            try {
+                // Check if componentData exists
+                if (typeof componentData === 'undefined') {
+                    throw new Error('بيانات المكونات غير متوفرة');
+                }
+
+                // Create gallery grid
+                const galleryGrid = document.createElement('div');
+                galleryGrid.className = 'gallery-grid';
+
+                // Create cards for each component
+                Object.keys(componentData).forEach(componentKey => {
+                    const component = componentData[componentKey];
+                    const card = createComponentCard(componentKey, component);
+                    galleryGrid.appendChild(card);
+                });
+
+                container.innerHTML = '';
+                container.appendChild(galleryGrid);
+
+            } catch (error) {
+                console.error('Error initializing gallery:', error);
+                container.innerHTML = `<div class="error-message">خطأ في تحميل المعرض: ${error.message}</div>`;
+            }
+        }
+
+        function createComponentCard(componentKey, component) {
+            const card = document.createElement('div');
+            card.className = 'component-card';
+            card.setAttribute('data-component', componentKey);
+
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.textContent = component.title;
+
+            const imagesPreview = document.createElement('div');
+            imagesPreview.className = 'images-preview';
+
+            // Create preview images
+            component.images.forEach((image, index) => {
+                const img = document.createElement('img');
+                img.src = image.src;
+                img.alt = image.caption;
+                img.className = 'preview-image';
+                img.loading = 'lazy';
+                
+                // Add click event for lightbox
+                img.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openLightbox(component.images, index);
+                });
+
+                // Error handling
+                img.onerror = function() {
+                    this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPtmE2YUg2YrYqtmFINiq2K3ZhdmK2YQg2KfZhNi12YjYsdipPC90ZXh0Pjwvc3ZnPg==';
+                };
+
+                imagesPreview.appendChild(img);
+            });
+
+            const footer = document.createElement('div');
+            footer.className = 'card-footer';
+            footer.textContent = `${component.images.length} صور توضيحية`;
+
+            const expandBtn = document.createElement('button');
+            expandBtn.className = 'expand-btn';
+            expandBtn.textContent = 'عرض جميع الصور';
+            expandBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                openLightbox(component.images, 0);
+            });
+
+            card.appendChild(title);
+            card.appendChild(imagesPreview);
+            card.appendChild(footer);
+            card.appendChild(expandBtn);
+
+            return card;
+        }
+
+        function openLightbox(images, startIndex = 0) {
+            // Create temporary links for lightbox
+            const tempContainer = document.createElement('div');
+            tempContainer.style.display = 'none';
+            document.body.appendChild(tempContainer);
+
+            images.forEach((image, index) => {
+                const link = document.createElement('a');
+                link.href = image.src;
+                link.setAttribute('data-lightbox', 'gallery');
+                link.setAttribute('data-title', image.caption);
+                tempContainer.appendChild(link);
+            });
+
+            // Trigger lightbox on the desired image
+            const targetLink = tempContainer.children[startIndex];
+            if (targetLink) {
+                targetLink.click();
+            }
+
+            // Clean up after lightbox closes
+            setTimeout(() => {
+                if (tempContainer.parentNode) {
+                    document.body.removeChild(tempContainer);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
